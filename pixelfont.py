@@ -4,7 +4,7 @@ pixelfont — a crisp 6x8 bitmap font for 1-bit e-paper.
 Each glyph is 5 pixels wide and 8 rows high (7 for capitals, the 8th for
 descenders), drawn with a 1-pixel gap, so every character cell is 6x8.
 No anti-aliasing, so it stays sharp on the black/white/red panel.
-Includes accented lowercase vowels (ā á ǎ à ä â ... ü), for pinyin and
+Includes accented vowels (ā á ǎ à ä â ... ü, Ō Ū ...), for pinyin, romaji and
 Dutch/French words.
 
     import pixelfont
@@ -131,6 +131,14 @@ def _accented():
             ch = unicodedata.normalize("NFC", base + mark)
             if len(ch) == 1:
                 out[ch] = "|".join([r0, r1] + rows[2:])
+    # capitals: accent on top, letter squeezed into rows 2-6 (rows 0,1,3,5,6)
+    for base in "AEIOU":
+        rows = _G[base].split("|")
+        small = [rows[0], rows[1], rows[3], rows[5], rows[6]]
+        for mark, (r0, r1) in _ACCENTS.items():
+            ch = unicodedata.normalize("NFC", base + mark)
+            if len(ch) == 1:
+                out[ch] = "|".join([r0, r1] + small + ["....."])
     # pinyin u-umlaut with a tone mark: show as plain ü (no room for both)
     for ch in "ǖǘǚǜ":
         out[ch] = out["ü"]
